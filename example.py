@@ -242,11 +242,11 @@ def demo_xor():
     # Visualize
     try:
         fig1 = visualize_structure(model, "XOR Problem - Learned Structure")
-        fig1.savefig('/home/runner/work/Structure-Backprop/Structure-Backprop/xor_structure.png', dpi=150, bbox_inches='tight')
+        fig1.savefig('xor_structure.png', dpi=150, bbox_inches='tight')
         print("Structure visualization saved to: xor_structure.png")
         
         fig2 = plot_training_history(history, "XOR Problem - Training History")
-        fig2.savefig('/home/runner/work/Structure-Backprop/Structure-Backprop/xor_history.png', dpi=150, bbox_inches='tight')
+        fig2.savefig('xor_history.png', dpi=150, bbox_inches='tight')
         print("Training history saved to: xor_history.png")
         
         plt.close('all')
@@ -304,11 +304,11 @@ def demo_addition():
     # Visualize
     try:
         fig1 = visualize_structure(model, "Addition Problem - Learned Structure")
-        fig1.savefig('/home/runner/work/Structure-Backprop/Structure-Backprop/addition_structure.png', dpi=150, bbox_inches='tight')
+        fig1.savefig('addition_structure.png', dpi=150, bbox_inches='tight')
         print("Structure visualization saved to: addition_structure.png")
         
         fig2 = plot_training_history(history, "Addition Problem - Training History")
-        fig2.savefig('/home/runner/work/Structure-Backprop/Structure-Backprop/addition_history.png', dpi=150, bbox_inches='tight')
+        fig2.savefig('addition_history.png', dpi=150, bbox_inches='tight')
         print("Training history saved to: addition_history.png")
         
         plt.close('all')
