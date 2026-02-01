@@ -1,0 +1,12 @@
+---
+spores: 1
+
+vision: |
+  Implements Structure-First Backpropagation, a method for automatic interleaved continuous-discrete architecture discovery. Converts graph structures directly through PyTorch using adjacency matrices.
+
+  Enables learning of topology without manual design.
+
+tags:
+  - status:prototype
+  - lang:python
+  - type:lib
