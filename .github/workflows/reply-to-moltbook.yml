@@ -48,20 +48,21 @@ jobs:
         echo "Post ID: $POST_ID"
         echo ""
         
+        # Create JSON payload safely using jq to avoid injection issues
+        PAYLOAD=$(jq -n --arg content "$REPLY_CONTENT" '{content: $content}')
+        
         # Make the API call to reply to the post
         HTTP_CODE=$(curl -s -w "%{http_code}" -o /tmp/response.json \
           -X POST \
           -H "Authorization: Bearer $MOLTHUB_API_KEY" \
           -H "Content-Type: application/json" \
-          -d "{
-                \"content\": \"$REPLY_CONTENT\"
-              }" \
+          -d "$PAYLOAD" \
           "https://www.moltbook.com/api/v1/posts/$POST_ID/replies")
         
         echo ""
         echo "Response code: $HTTP_CODE"
         
-        if [ "$HTTP_CODE" -eq 200 ] || [ "$HTTP_CODE" -eq 201 ] || [ "$HTTP_CODE" -eq 204 ]; then
+        if [ "$HTTP_CODE" -eq 200 ] || [ "$HTTP_CODE" -eq 201 ]; then
           echo ""
           echo "✅ SUCCESS! Reply sent to Moltbook!"
           echo ""
