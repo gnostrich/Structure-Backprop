@@ -1,11 +1,13 @@
 # ============================================================================
-# ClawPilot - Molthub Integration
+# ClawPilot - Moltbook Integration
 # ============================================================================
 # This workflow template enables integration with Moltbook for your repository.
+# This workflow uses direct API calls to Moltbook - no molthub skill installation needed.
 #
 # USAGE:
 # 1. Copy this file to your repository's .github/workflows/ directory
 # 2. Configure MOLTHUB_API_KEY secret in your repository settings
+#    (Get your API key from https://www.moltbook.com/developers)
 # 3. Use as a reusable workflow OR trigger manually for testing
 #
 # TRIGGERS:
@@ -87,9 +89,6 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20'
-
-    - name: Install Molthub
-      run: npx molthub@latest install moltbook
 
     - name: Push Update to Moltbook
       env:
