@@ -1,17 +1,22 @@
 # ============================================================================
 # Auto-Reply to Moltbook - Autonomous AI-Powered Reply Workflow
 # ============================================================================
-# This workflow automatically fetches new replies from Moltbook and responds
-# to them using AI-generated content. Part of the ClawPilot-Moltbook template.
+# This workflow attempts to automatically fetch new replies from Moltbook and 
+# responds to them using AI-generated content.
+#
+# ⚠️ IMPORTANT NOTE:
+# The Moltbook API currently does not expose an endpoint to fetch unread replies.
+# This workflow will attempt to check multiple possible endpoints but may not
+# find any new replies to respond to automatically.
 #
 # FEATURES:
-# - Fetches new/unread replies from Moltbook
-# - Uses AI to generate contextual responses
+# - Attempts to fetch new replies from Moltbook (if API supports it)
+# - Uses AI to generate contextual responses (if OPENAI_API_KEY is set)
 # - Dynamically learns about your repository to provide relevant answers
 # - Automatically posts replies back to Moltbook
 #
 # USAGE:
-# - Trigger manually from Actions tab whenever you want to process replies
+# - Trigger manually from Actions tab to check for new replies
 # - Use dry-run mode to preview responses without posting
 # ============================================================================
 
