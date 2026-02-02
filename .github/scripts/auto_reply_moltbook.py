@@ -106,7 +106,7 @@ def fetch_replies():
             print(f"  ⚠️ Error accessing {endpoint}: {e}")
     
     print(f"⚠️ No valid reply endpoints found. The Moltbook API may not support automatic reply fetching yet.")
-    print(f"💡 Tip: Use the 'Reply to Moltbook Post' workflow to manually reply to specific posts.")
+    print(f"💡 Tip: Check Moltbook directly for new replies and consider adding API endpoint support.")
     return []
 
 def generate_ai_reply(reply_content, reply_author, repo_context):
