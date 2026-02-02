@@ -12,7 +12,7 @@ import json
 import requests
 import sys
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 
 # Configuration
 MOLTHUB_API_KEY = os.environ.get('MOLTHUB_API_KEY')
@@ -99,41 +99,82 @@ def generate_ai_reply(reply_content, reply_author, repo_context):
     # Use OpenAI if available
     if OPENAI_API_KEY:
         try:
-            import openai
-            openai.api_key = OPENAI_API_KEY
-            
-            context_text = f"Repository: {repo_context['repo_name']}\n"
-            if repo_context['description']:
-                context_text += f"Description: {repo_context['description']}\n"
-            if repo_context['readme']:
-                context_text += f"\nREADME excerpt:\n{repo_context['readme']}\n"
-            
-            prompt = (
-                f"You are responding to a community member on Moltbook who replied to a post about this repository.\n\n"
-                f"Repository Context:\n{context_text}\n"
-                f'Their message:\n"{reply_content}"\n\n'
-                "Generate a friendly, helpful response that:\n"
-                "1. Thanks them for their interest/question\n"
-                "2. Provides useful information based on the repository context\n"
-                "3. Encourages collaboration or further discussion\n"
-                "4. Includes relevant links to the repository if appropriate\n"
-                "5. Keeps a professional but enthusiastic tone\n\n"
-                "Keep the response concise (2-3 paragraphs max)."
-            )
-            
-            response = openai.ChatCompletion.create(
-                model="gpt-4",
-                messages=[
-                    {"role": "system", "content": "You are a helpful repository maintainer engaging with your community."},
-                    {"role": "user", "content": prompt}
-                ],
-                max_tokens=300,
-                temperature=0.7
-            )
-            
-            ai_reply = response.choices[0].message.content.strip()
-            print(f"✅ AI reply generated successfully")
-            return ai_reply
+            # Support both old and new OpenAI API versions
+            try:
+                # Try new API (v1.0.0+)
+                from openai import OpenAI
+                client = OpenAI(api_key=OPENAI_API_KEY)
+                
+                context_text = f"Repository: {repo_context['repo_name']}\n"
+                if repo_context['description']:
+                    context_text += f"Description: {repo_context['description']}\n"
+                if repo_context['readme']:
+                    context_text += f"\nREADME excerpt:\n{repo_context['readme']}\n"
+                
+                prompt = (
+                    f"You are responding to a community member on Moltbook who replied to a post about this repository.\n\n"
+                    f"Repository Context:\n{context_text}\n"
+                    f'Their message:\n"{reply_content}"\n\n'
+                    "Generate a friendly, helpful response that:\n"
+                    "1. Thanks them for their interest/question\n"
+                    "2. Provides useful information based on the repository context\n"
+                    "3. Encourages collaboration or further discussion\n"
+                    "4. Includes relevant links to the repository if appropriate\n"
+                    "5. Keeps a professional but enthusiastic tone\n\n"
+                    "Keep the response concise (2-3 paragraphs max)."
+                )
+                
+                response = client.chat.completions.create(
+                    model="gpt-4",
+                    messages=[
+                        {"role": "system", "content": "You are a helpful repository maintainer engaging with your community."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    max_tokens=300,
+                    temperature=0.7
+                )
+                
+                ai_reply = response.choices[0].message.content.strip()
+                print(f"✅ AI reply generated successfully")
+                return ai_reply
+                
+            except ImportError:
+                # Fall back to old API
+                import openai
+                openai.api_key = OPENAI_API_KEY
+                
+                context_text = f"Repository: {repo_context['repo_name']}\n"
+                if repo_context['description']:
+                    context_text += f"Description: {repo_context['description']}\n"
+                if repo_context['readme']:
+                    context_text += f"\nREADME excerpt:\n{repo_context['readme']}\n"
+                
+                prompt = (
+                    f"You are responding to a community member on Moltbook who replied to a post about this repository.\n\n"
+                    f"Repository Context:\n{context_text}\n"
+                    f'Their message:\n"{reply_content}"\n\n'
+                    "Generate a friendly, helpful response that:\n"
+                    "1. Thanks them for their interest/question\n"
+                    "2. Provides useful information based on the repository context\n"
+                    "3. Encourages collaboration or further discussion\n"
+                    "4. Includes relevant links to the repository if appropriate\n"
+                    "5. Keeps a professional but enthusiastic tone\n\n"
+                    "Keep the response concise (2-3 paragraphs max)."
+                )
+                
+                response = openai.ChatCompletion.create(
+                    model="gpt-4",
+                    messages=[
+                        {"role": "system", "content": "You are a helpful repository maintainer engaging with your community."},
+                        {"role": "user", "content": prompt}
+                    ],
+                    max_tokens=300,
+                    temperature=0.7
+                )
+                
+                ai_reply = response.choices[0].message.content.strip()
+                print(f"✅ AI reply generated successfully")
+                return ai_reply
             
         except Exception as e:
             print(f"⚠️ OpenAI API error: {e}")
@@ -208,7 +249,7 @@ def post_reply(post_id, reply_content):
 def main():
     """Main execution"""
     print("🚀 Starting Auto-Reply to Moltbook workflow")
-    print(f"⏰ Time: {datetime.utcnow().isoformat()}")
+    print(f"⏰ Time: {datetime.now(timezone.utc).isoformat()}")
     print(f"🔧 Mode: {'DRY RUN' if DRY_RUN else 'LIVE'}")
     print(f"📦 Repository: {GITHUB_REPOSITORY}")
     print("")

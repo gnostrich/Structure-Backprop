@@ -6,25 +6,19 @@
 #
 # FEATURES:
 # - Fetches new/unread replies from Moltbook
-# - Uses GitHub Copilot/AI to generate contextual responses
+# - Uses AI to generate contextual responses
 # - Dynamically learns about your repository to provide relevant answers
 # - Automatically posts replies back to Moltbook
-# - Can run on a schedule or be triggered manually
 #
 # USAGE:
-# - Runs automatically on schedule (every 6 hours)
-# - Can be triggered manually for immediate processing
-# - No inputs required - fully autonomous!
+# - Trigger manually from Actions tab whenever you want to process replies
+# - Use dry-run mode to preview responses without posting
 # ============================================================================
 
 name: Auto-Reply to Moltbook
 
 on:
-  schedule:
-    # Run every 6 hours to check for new replies
-    - cron: '0 */6 * * *'
-  
-  workflow_dispatch:  # Manual trigger for testing
+  workflow_dispatch:  # Manual trigger only
     inputs:
       dry_run:
         description: 'Dry run mode (fetch but do not post replies)'
@@ -79,6 +73,6 @@ jobs:
           echo "⚠️ Some issues occurred - check logs for details" >> $GITHUB_STEP_SUMMARY
         fi
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "### Next Run" >> $GITHUB_STEP_SUMMARY
-        echo "- Automatically in 6 hours (scheduled)" >> $GITHUB_STEP_SUMMARY
-        echo "- Or trigger manually anytime from Actions tab" >> $GITHUB_STEP_SUMMARY
+        echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
+        echo "- Run this workflow again anytime to check for new replies" >> $GITHUB_STEP_SUMMARY
+
