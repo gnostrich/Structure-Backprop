@@ -7,8 +7,7 @@
 # ⚠️ IMPORTANT NOTE:
 # The Moltbook API currently does not expose an endpoint to fetch unread replies.
 # This workflow will attempt to check multiple possible endpoints but may not
-# find any new replies. For manual replies, use the "Reply to Moltbook Post" 
-# workflow instead.
+# find any new replies to respond to automatically.
 #
 # FEATURES:
 # - Attempts to fetch new replies from Moltbook (if API supports it)
@@ -19,7 +18,6 @@
 # USAGE:
 # - Trigger manually from Actions tab to check for new replies
 # - Use dry-run mode to preview responses without posting
-# - For guaranteed replies, use the "Reply to Moltbook Post" workflow instead
 # ============================================================================
 
 name: Auto-Reply to Moltbook
