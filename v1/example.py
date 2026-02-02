@@ -9,6 +9,13 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 from structure_backprop import StructureBackpropNetwork, train_structure_backprop
+from visualization import (
+    visualize_structure, 
+    plot_training_history, 
+    visualize_embeddings,
+    create_summary_report,
+    ensure_output_dir
+)
 
 
 def create_xor_dataset(n_samples: int = 100) -> tuple:
@@ -58,81 +65,36 @@ def create_addition_dataset(n_samples: int = 200) -> tuple:
     return X, y
 
 
-def visualize_structure(model: StructureBackpropNetwork, title: str = "Learned Structure"):
+def visualize_structure(model: StructureBackpropNetwork, title: str = "Learned Structure", task_name: str = None):
     """
     Visualize the learned graph structure.
+    
+    Note: This is kept for backward compatibility. 
+    New code should use visualization.visualize_structure() directly.
     
     Args:
         model: Trained StructureBackpropNetwork
         title: Plot title
+        task_name: Optional task name for saving outputs
     """
-    with torch.no_grad():
-        weights = (model.weights * model.structure_mask).numpy()
-    
-    plt.figure(figsize=(10, 8))
-    plt.imshow(weights, cmap='RdBu', vmin=-1, vmax=1, aspect='auto')
-    plt.colorbar(label='Weight Value')
-    
-    # Add grid lines to separate node types
-    plt.axhline(y=model.input_range[1] - 0.5, color='black', linewidth=2)
-    plt.axhline(y=model.hidden_range[1] - 0.5, color='black', linewidth=2)
-    plt.axvline(x=model.input_range[1] - 0.5, color='black', linewidth=2)
-    plt.axvline(x=model.hidden_range[1] - 0.5, color='black', linewidth=2)
-    
-    # Add labels
-    plt.ylabel('Source Node')
-    plt.xlabel('Target Node')
-    plt.title(title)
-    
-    # Add text annotations for node types
-    y_labels = ['Input'] * model.n_input + ['Hidden'] * model.n_hidden + ['Output'] * model.n_output
-    x_labels = y_labels
-    
-    plt.yticks(range(model.n_total), 
-               [f"{y_labels[i]}_{i}" for i in range(model.n_total)],
-               fontsize=8)
-    plt.xticks(range(model.n_total),
-               [f"{x_labels[i]}_{i}" for i in range(model.n_total)],
-               rotation=90, fontsize=8)
-    
-    plt.tight_layout()
-    return plt.gcf()
+    from visualization import visualize_structure as viz_struct
+    return viz_struct(model, title=title, task_name=task_name, interactive=False)
 
 
-def plot_training_history(history: dict, title: str = "Training History"):
+def plot_training_history(history: dict, title: str = "Training History", task_name: str = None):
     """
     Plot training metrics over time.
+    
+    Note: This is kept for backward compatibility.
+    New code should use visualization.plot_training_history() directly.
     
     Args:
         history: Dictionary with 'loss', 'sparsity', 'active_edges'
         title: Plot title
+        task_name: Optional task name for saving outputs
     """
-    fig, axes = plt.subplots(1, 3, figsize=(15, 4))
-    
-    # Loss
-    axes[0].plot(history['loss'])
-    axes[0].set_xlabel('Epoch')
-    axes[0].set_ylabel('Loss')
-    axes[0].set_title('Training Loss')
-    axes[0].grid(True, alpha=0.3)
-    
-    # Sparsity
-    axes[1].plot(history['sparsity'])
-    axes[1].set_xlabel('Epoch')
-    axes[1].set_ylabel('Sparsity (%)')
-    axes[1].set_title('Network Sparsity')
-    axes[1].grid(True, alpha=0.3)
-    
-    # Active edges
-    axes[2].plot(history['active_edges'])
-    axes[2].set_xlabel('Epoch')
-    axes[2].set_ylabel('Number of Edges')
-    axes[2].set_title('Active Edges')
-    axes[2].grid(True, alpha=0.3)
-    
-    fig.suptitle(title, fontsize=14, fontweight='bold')
-    plt.tight_layout()
-    return fig
+    from visualization import plot_training_history as plot_hist
+    return plot_hist(history, title=title, task_name=task_name, interactive=False)
 
 
 def print_structure_summary(model: StructureBackpropNetwork):
@@ -241,17 +203,25 @@ def demo_xor():
     
     # Visualize
     try:
-        fig1 = visualize_structure(model, "XOR Problem - Learned Structure")
-        fig1.savefig('xor_structure.png', dpi=150, bbox_inches='tight')
-        print("Structure visualization saved to: xor_structure.png")
+        # Save static visualizations
+        fig1 = visualize_structure(model, "XOR Problem - Learned Structure", task_name='xor')
+        fig2 = plot_training_history(history, "XOR Problem - Training History", task_name='xor')
         
-        fig2 = plot_training_history(history, "XOR Problem - Training History")
-        fig2.savefig('xor_history.png', dpi=150, bbox_inches='tight')
-        print("Training history saved to: xor_history.png")
+        # Create embedding visualization
+        visualize_embeddings(model, X, y, method='umap', 
+                           title='XOR - Hidden Layer Embeddings (UMAP)',
+                           task_name='xor')
+        
+        # Create summary report
+        final_metrics = {
+            'final_loss': final_loss.item(),
+            'accuracy': accuracy.item()
+        }
+        create_summary_report(model, history, final_metrics, 'xor')
         
         plt.close('all')
     except Exception as e:
-        print(f"Visualization skipped (display not available): {e}")
+        print(f"Visualization error: {e}")
     
     return model, history
 
@@ -303,17 +273,24 @@ def demo_addition():
     
     # Visualize
     try:
-        fig1 = visualize_structure(model, "Addition Problem - Learned Structure")
-        fig1.savefig('addition_structure.png', dpi=150, bbox_inches='tight')
-        print("Structure visualization saved to: addition_structure.png")
+        # Save static visualizations
+        fig1 = visualize_structure(model, "Addition Problem - Learned Structure", task_name='addition')
+        fig2 = plot_training_history(history, "Addition Problem - Training History", task_name='addition')
         
-        fig2 = plot_training_history(history, "Addition Problem - Training History")
-        fig2.savefig('addition_history.png', dpi=150, bbox_inches='tight')
-        print("Training history saved to: addition_history.png")
+        # Create embedding visualization
+        visualize_embeddings(model, X, y, method='umap',
+                           title='Addition - Hidden Layer Embeddings (UMAP)',
+                           task_name='addition')
+        
+        # Create summary report
+        final_metrics = {
+            'final_loss': final_loss.item()
+        }
+        create_summary_report(model, history, final_metrics, 'addition')
         
         plt.close('all')
     except Exception as e:
-        print(f"Visualization skipped (display not available): {e}")
+        print(f"Visualization error: {e}")
     
     return model, history
 
