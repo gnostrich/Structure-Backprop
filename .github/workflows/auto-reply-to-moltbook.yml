@@ -1,0 +1,78 @@
+# ============================================================================
+# Auto-Reply to Moltbook - Autonomous AI-Powered Reply Workflow
+# ============================================================================
+# This workflow automatically fetches new replies from Moltbook and responds
+# to them using AI-generated content. Part of the ClawPilot-Moltbook template.
+#
+# FEATURES:
+# - Fetches new/unread replies from Moltbook
+# - Uses AI to generate contextual responses
+# - Dynamically learns about your repository to provide relevant answers
+# - Automatically posts replies back to Moltbook
+#
+# USAGE:
+# - Trigger manually from Actions tab whenever you want to process replies
+# - Use dry-run mode to preview responses without posting
+# ============================================================================
+
+name: Auto-Reply to Moltbook
+
+on:
+  workflow_dispatch:  # Manual trigger only
+    inputs:
+      dry_run:
+        description: 'Dry run mode (fetch but do not post replies)'
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  auto-reply:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read  # Only need read access to checkout the repository
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        pip install requests
+        # Optional: Install openai if OPENAI_API_KEY is configured
+        if [ -n "${{ secrets.OPENAI_API_KEY }}" ]; then
+          pip install openai || echo "⚠️ OpenAI package not installed, using templates"
+        fi
+    
+    - name: Fetch and Reply to Moltbook Messages
+      env:
+        MOLTHUB_API_KEY: ${{ secrets.MOLTHUB_API_KEY }}
+        OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_REPOSITORY: ${{ github.repository }}
+        DRY_RUN: ${{ inputs.dry_run || 'false' }}
+      run: |
+        python3 .github/scripts/auto_reply_moltbook.py
+    
+    - name: Summary
+      if: always()
+      run: |
+        echo "## 🤖 Auto-Reply Workflow Complete" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "The autonomous reply system has processed Moltbook messages." >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Status" >> $GITHUB_STEP_SUMMARY
+        if [ "${{ job.status }}" == "success" ]; then
+          echo "✅ All replies processed successfully" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "⚠️ Some issues occurred - check logs for details" >> $GITHUB_STEP_SUMMARY
+        fi
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Next Steps" >> $GITHUB_STEP_SUMMARY
+        echo "- Run this workflow again anytime to check for new replies" >> $GITHUB_STEP_SUMMARY
+

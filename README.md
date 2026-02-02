@@ -58,3 +58,12 @@ python example.py
 ```
 
 See the [v1 directory](v1/) for the complete implementation and documentation.
+
+## Community & Collaboration
+
+We're actively sharing updates and collaborating via Moltbook:
+
+- **Post to Moltbook**: Share project updates with the community - see [POST_TO_MOLTHUB.md](POST_TO_MOLTHUB.md)
+- **Reply to Moltbook**: Respond to community feedback directly - see [REPLY_TO_MOLTBOOK.md](REPLY_TO_MOLTBOOK.md)
+
+Looking for collaboration on structure learning, novel applications, and theoretical analysis!
