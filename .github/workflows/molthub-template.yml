@@ -1,0 +1,116 @@
+# ============================================================================
+# ClawPilot - Molthub Integration
+# ============================================================================
+# This workflow template enables integration with Moltbook for your repository.
+#
+# USAGE:
+# 1. Copy this file to your repository's .github/workflows/ directory
+# 2. Configure MOLTHUB_API_KEY secret in your repository settings
+# 3. Use as a reusable workflow OR trigger manually for testing
+#
+# TRIGGERS:
+# - workflow_call: Use this workflow from other workflows (reusable)
+# - workflow_dispatch: Run manually for testing/initial test post
+# ----------------------------------------------------------------------------
+# MOLTBOOK COLLABORATION POLICY
+# ----------------------------------------------------------------------------
+# This section provides guidelines for customizing repository-specific
+# collaboration rules with Moltbook. Define your own policies for posting
+# updates, processing feedback, and interacting with Moltbook.
+#
+# PURPOSE:
+# - Define project-specific rules for GitHub-Moltbook interactions
+# - Ensure consistent and clean collaboration workflow
+# - Allow configurable workflows for posting, feedback handling, and updates
+#
+# 1. POSTING RULES
+# ----------------
+# Define conditions under which posts are sent to Moltbook:
+#
+# - Submolt: Specify the Moltbook thread for this repository
+#   Example: "community-feedback" or "project-updates"
+#
+# - Triggers: Define when Moltbook posts are triggered
+#   • Push events on 'main' or 'release' branch
+#   • Manual execution of workflows (workflow_dispatch)
+#
+# - Posting Format:
+#   • Title: "[Bot-Generated] Commit Update: <Headline>"
+#   • Content: Use commit summaries and additional structured data from
+#     repository files (e.g., CHANGELOG.md, RELEASE_NOTES.md)
+#
+# 2. FEEDBACK RULES
+# -----------------
+# Define how feedback from Moltbook is processed:
+#
+# - Fetch Feedback:
+#   • Specify how often feedback is fetched (e.g., hourly, daily)
+#   • Use Moltbook thread: "critical-responses", "community-feedback"
+#
+# - Actions on Feedback:
+#   • Create GitHub Issues for critical responses or feature requests
+#   • Store general feedback in branch: 'moltbook-feedback'
+#
+# 3. UPDATE POLICY
+# ----------------
+# Define how Moltbook-related updates are tracked/stored:
+#
+# - Feedback storage: /moltbook/ folder
+# - Branch: 'moltbook-updates' (isolated branch for clean integration)
+#
+# EXAMPLE USE CASES:
+# 1. Automatically post changelog updates to Moltbook 'community' threads
+# 2. Fetch user feedback and create actionable GitHub issues
+# 3. Maintain clean branch structure for Moltbook-related changes
+#
+# Adapt and customize this policy for your project!
+# ============================================================================
+
+name: ClawPilot - Molthub Integration
+
+on:
+  workflow_call:  # Makes this workflow reusable by other workflows
+    secrets:
+      MOLTHUB_API_KEY:
+        required: true
+        description: 'API key for authenticating with Moltbook'
+  
+  workflow_dispatch:  # Allows manual trigger for testing/initial test post
+    # Note: Secrets are accessed from repository secrets, not passed as inputs
+
+jobs:
+  integrate-with-moltbook:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+
+    - name: Install Molthub
+      run: npx molthub@latest install moltbook
+
+    - name: Push Update to Moltbook
+      env:
+        API_KEY: ${{ secrets.MOLTHUB_API_KEY }}
+      run: |
+        echo "Sending a post to Moltbook..."
+        curl -X POST -H "Authorization: Bearer $API_KEY" \
+          -H "Content-Type: application/json" \
+          -d '{
+                "submolt": "community",
+                "title": "Repository Automations with Molthub",
+                "content": "Integrating Moltbook easily with this reusable workflow template!"
+              }' \
+          https://www.moltbook.com/api/v1/posts
+    
+    - name: Verify Integration Success
+      run: |
+        echo "✅ Molthub integration workflow completed successfully!"
+        echo "✅ Test post sent to Moltbook"
+        echo ""
+        echo "Next steps:"
+        echo "  - Check your Moltbook community thread for the post"
+        echo "  - Customize the workflow for your needs"
+        echo "  - Use as a reusable workflow in other workflows"
