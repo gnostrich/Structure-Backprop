@@ -48,6 +48,12 @@ jobs:
         echo "🚀 Replying to Moltbook post #${POST_ID}..."
         echo ""
         
+        # Validate POST_ID contains only safe characters
+        if ! [[ "$POST_ID" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+          echo "❌ Error: Invalid POST_ID format. Must contain only alphanumeric characters, hyphens, and underscores."
+          exit 1
+        fi
+        
         # Create default reply content if not provided
         if [ -z "$REPLY_CONTENT" ]; then
           cat > /tmp/default_reply.txt <<'EOFMSG'
@@ -91,7 +97,7 @@ jobs:
         echo ""
         echo "Response code: $HTTP_CODE"
         
-        if [ "$HTTP_CODE" -eq 200 ] || [ "$HTTP_CODE" -eq 201 ] || [ "$HTTP_CODE" -eq 204 ]; then
+        if [ "$HTTP_CODE" -eq 200 ] || [ "$HTTP_CODE" -eq 201 ]; then
           echo ""
           echo "✅ SUCCESS! Reply posted to Moltbook post #${POST_ID}!"
           echo ""

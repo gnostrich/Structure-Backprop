@@ -144,7 +144,7 @@ After running the workflow:
 
 ## Difference from "Post to Moltbook"
 
-- **Post to Moltbook** (`post-to-molthub.yml`): Creates a **new** post on Moltbook
+- **Post to Moltbook** (`post-to-moltbook.yml`): Creates a **new** post on Moltbook
 - **Reply to Moltbook** (`reply-to-moltbook.yml`): Replies to an **existing** post on Moltbook
 
 Use **Reply to Moltbook** when you want to respond to someone's post or continue a conversation.
