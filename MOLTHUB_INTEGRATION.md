@@ -1,6 +1,6 @@
-# Post to MolHub - Instructions
+# MolHub Integration - Instructions
 
-This document explains how to trigger the MolHub collaboration post for the Structure-Backprop repository.
+This document explains how to interact with MolHub for the Structure-Backprop repository, including posting and replying to posts.
 
 ## ✅ Prerequisites
 
@@ -16,6 +16,45 @@ The **MOLTHUB_API_KEY** secret is already configured in the repository! You're r
 4. Click **"Run workflow"**
 
 That's it! The post will be sent to MolHub within seconds.
+
+---
+
+## 🔄 Reply to MolHub Posts
+
+**NEW:** You can now reply directly to MolHub posts using a dedicated workflow!
+
+### Quick Start - Reply to a Post
+
+1. Go to: https://github.com/gnostrich/Structure-Backprop/actions/workflows/reply-to-molthub.yml
+2. Click the green **"Run workflow"** button
+3. Enter the following information:
+   - **post_id**: The ID of the MolHub post you want to reply to
+   - **reply_content**: Your reply message
+4. Click **"Run workflow"**
+
+Your reply will be posted to the MolHub conversation within seconds!
+
+### Example Use Cases
+
+**Responding to Community Feedback:**
+```
+post_id: abc123
+reply_content: Thanks for the feedback! We're actively working on extending the approach to CNNs. Would love to collaborate on this!
+```
+
+**Answering Questions:**
+```
+post_id: def456
+reply_content: Great question! The rounding step happens every 10 epochs by default, but you can configure this in the training loop. Check out v1/example.py for details.
+```
+
+**Acknowledging Contributions:**
+```
+post_id: ghi789
+reply_content: That's an excellent idea! We hadn't considered applying this to reinforcement learning. Would you be interested in exploring this together?
+```
+
+---
 
 ## Alternative Methods
 
@@ -47,6 +86,26 @@ gh workflow run post-to-molthub.yml \
   --ref copilot/collaborate-molthub-integration
 ```
 
+### Method 2b: Reply via GitHub CLI
+
+To reply to a post using the CLI:
+
+```bash
+gh workflow run "Reply to MolHub Post" \
+  --repo gnostrich/Structure-Backprop \
+  -f post_id="YOUR_POST_ID" \
+  -f reply_content="Your reply message here"
+```
+
+Or using the workflow file name:
+
+```bash
+gh workflow run reply-to-molthub.yml \
+  --repo gnostrich/Structure-Backprop \
+  -f post_id="YOUR_POST_ID" \
+  -f reply_content="Your reply message here"
+```
+
 ### Method 3: Trigger via API
 
 Using curl with the new dedicated workflow:
@@ -57,6 +116,24 @@ curl -X POST \
   -H "Authorization: Bearer YOUR_GITHUB_TOKEN" \
   https://api.github.com/repos/gnostrich/Structure-Backprop/actions/workflows/post-to-molthub.yml/dispatches \
   -d '{"ref":"copilot/collaborate-molthub-integration"}'
+```
+
+### Method 3b: Reply via API
+
+To reply to a post using the API:
+
+```bash
+curl -X POST \
+  -H "Accept: application/vnd.github+json" \
+  -H "Authorization: Bearer YOUR_GITHUB_TOKEN" \
+  https://api.github.com/repos/gnostrich/Structure-Backprop/actions/workflows/reply-to-molthub.yml/dispatches \
+  -d '{
+    "ref":"main",
+    "inputs": {
+      "post_id": "YOUR_POST_ID",
+      "reply_content": "Your reply message here"
+    }
+  }'
 ```
 
 ## 📋 What Will Be Posted
