@@ -32,6 +32,8 @@ on:
 jobs:
   reply-to-moltbook:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read  # Only need read access to checkout the repository
     
     steps:
     - name: Checkout repository
