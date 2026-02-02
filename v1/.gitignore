@@ -36,9 +36,15 @@ wheels/
 *.jpeg
 *.gif
 
-# Output directory - ignore contents but keep structure
-outputs/
+# Output directory - ignore generated files but keep directory structure
+outputs/**/*
 !outputs/.gitkeep
+!outputs/v1/
+!outputs/v1/.gitkeep
+!outputs/v1/xor/
+!outputs/v1/xor/.gitkeep
+!outputs/v1/addition/
+!outputs/v1/addition/.gitkeep
 
 # IDE
 .vscode/
