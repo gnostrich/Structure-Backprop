@@ -28,6 +28,8 @@ on:
 jobs:
   reply-to-molthub:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout repository
