@@ -28,71 +28,79 @@ on:
 jobs:
   reply-to-molthub:
     runs-on: ubuntu-latest
-    
+
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-    
-    - name: Reply to MolHub Post
-      env:
-        MOLTHUB_API_KEY: ${{ secrets.MOLTHUB_API_KEY }}
-        POST_ID: ${{ github.event.inputs.post_id }}
-        REPLY_CONTENT: ${{ github.event.inputs.reply_content }}
-      run: |
-        echo "🚀 Posting reply to MolHub post #$POST_ID..."
-        echo ""
-        
-        # Make the API call to post a reply
-        HTTP_CODE=$(curl -s -w "%{http_code}" -o /tmp/response.json \
-          -X POST \
-          -H "Authorization: Bearer $MOLTHUB_API_KEY" \
-          -H "Content-Type: application/json" \
-          -d "{
-                \"post_id\": \"$POST_ID\",
-                \"content\": $(echo "$REPLY_CONTENT" | jq -Rs .)
-              }" \
-          https://www.moltbook.com/api/v1/posts/$POST_ID/replies)
-        
-        echo ""
-        echo "Response code: $HTTP_CODE"
-        
-        if [ "$HTTP_CODE" -eq 200 ] || [ "$HTTP_CODE" -eq 201 ] || [ "$HTTP_CODE" -eq 204 ]; then
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Reply to MolHub Post
+        env:
+          MOLTHUB_API_KEY: ${{ secrets.MOLTHUB_API_KEY }}
+          POST_ID: ${{ github.event.inputs.post_id }}
+          REPLY_CONTENT: ${{ github.event.inputs.reply_content }}
+        run: |
+          echo "🚀 Posting reply to MolHub post #$POST_ID..."
           echo ""
-          echo "✅ SUCCESS! Reply posted to MolHub post #$POST_ID!"
+
+          # Make the API call to post a reply
+          HTTP_CODE=$(curl -s -w "%{http_code}" -o /tmp/response.json \
+            -X POST \
+            -H "Authorization: Bearer $MOLTHUB_API_KEY" \
+            -H "Content-Type: application/json" \
+            -d "{
+                  \"post_id\": \"$POST_ID\",
+                  \"content\": $(echo "$REPLY_CONTENT" | jq -Rs .)
+                }" \
+            https://www.moltbook.com/api/v1/posts/$POST_ID/replies)
+
           echo ""
-          echo "📋 Reply Details:"
-          echo "   Post ID: $POST_ID"
-          echo "   Content: ${REPLY_CONTENT:0:100}..."
-          echo ""
-          echo "🎉 Next Steps:"
-          echo "   1. Check MolHub to see your reply: https://www.moltbook.com/"
-          echo "   2. Monitor for further responses"
-          echo "   3. Continue the conversation as needed"
-          echo ""
-          cat /tmp/response.json 2>/dev/null || true
-        else
-          echo ""
-          echo "❌ Failed to post reply to MolHub"
-          echo "   HTTP Status: $HTTP_CODE"
-          echo ""
-          echo "Response:"
-          cat /tmp/response.json 2>/dev/null || echo "No response body"
-          exit 1
-        fi
-    
-    - name: Summary
-      if: success()
-      run: |
-        echo "## 🎉 MolHub Reply Successful!" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "Your reply has been posted to the MolHub conversation!" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "### What was posted:" >> $GITHUB_STEP_SUMMARY
-        echo "- **Post ID:** ${{ github.event.inputs.post_id }}" >> $GITHUB_STEP_SUMMARY
-        echo "- **Platform:** MolHub" >> $GITHUB_STEP_SUMMARY
-        echo "- **Content:** Reply posted successfully" >> $GITHUB_STEP_SUMMARY
-        echo "" >> $GITHUB_STEP_SUMMARY
-        echo "### Next steps:" >> $GITHUB_STEP_SUMMARY
-        echo "1. Visit [MolHub](https://www.moltbook.com/) to see your reply" >> $GITHUB_STEP_SUMMARY
-        echo "2. Monitor the conversation for further responses" >> $GITHUB_STEP_SUMMARY
-        echo "3. Continue engaging with the community" >> $GITHUB_STEP_SUMMARY
+          echo "Response code: $HTTP_CODE"
+
+          if [ "$HTTP_CODE" -eq 200 ] || \
+             [ "$HTTP_CODE" -eq 201 ] || \
+             [ "$HTTP_CODE" -eq 204 ]; then
+            echo ""
+            echo "✅ SUCCESS! Reply posted to MolHub post #$POST_ID!"
+            echo ""
+            echo "📋 Reply Details:"
+            echo "   Post ID: $POST_ID"
+            echo "   Content: ${REPLY_CONTENT:0:100}..."
+            echo ""
+            echo "🎉 Next Steps:"
+            echo "   1. Check MolHub to see your reply: https://www.moltbook.com/"
+            echo "   2. Monitor for further responses"
+            echo "   3. Continue the conversation as needed"
+            echo ""
+            cat /tmp/response.json 2>/dev/null || true
+          else
+            echo ""
+            echo "❌ Failed to post reply to MolHub"
+            echo "   HTTP Status: $HTTP_CODE"
+            echo ""
+            echo "Response:"
+            cat /tmp/response.json 2>/dev/null || echo "No response body"
+            exit 1
+          fi
+
+      - name: Summary
+        if: success()
+        run: |
+          POST_ID="${{ github.event.inputs.post_id }}"
+          echo "## 🎉 MolHub Reply Successful!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Your reply has been posted to the MolHub conversation!" \
+            >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### What was posted:" >> $GITHUB_STEP_SUMMARY
+          echo "- **Post ID:** $POST_ID" >> $GITHUB_STEP_SUMMARY
+          echo "- **Platform:** MolHub" >> $GITHUB_STEP_SUMMARY
+          echo "- **Content:** Reply posted successfully" \
+            >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Next steps:" >> $GITHUB_STEP_SUMMARY
+          echo "1. Visit [MolHub](https://www.moltbook.com/) to see your reply" \
+            >> $GITHUB_STEP_SUMMARY
+          echo "2. Monitor the conversation for further responses" \
+            >> $GITHUB_STEP_SUMMARY
+          echo "3. Continue engaging with the community" \
+            >> $GITHUB_STEP_SUMMARY
