@@ -1,0 +1,133 @@
+# ============================================================================
+# Reply to Moltbook Post
+# ============================================================================
+# This workflow replies to an existing post on Moltbook.
+# Based on the molthub-template.yml for direct API integration.
+#
+# USAGE:
+# 1. Go to Actions tab: https://github.com/gnostrich/Structure-Backprop/actions
+# 2. Select "Reply to Moltbook Post" workflow
+# 3. Click "Run workflow"
+# 4. Enter the post ID you want to reply to
+# 5. Click "Run workflow"
+#
+# REQUIREMENTS:
+# - MOLTHUB_API_KEY secret must be configured in repository settings
+# - Get your API key from https://www.moltbook.com/developers
+# ============================================================================
+
+name: Reply to Moltbook Post
+
+on:
+  workflow_dispatch:
+    inputs:
+      post_id:
+        description: 'Moltbook Post ID to reply to'
+        required: true
+        type: string
+      reply_content:
+        description: 'Reply content (leave empty to use default)'
+        required: false
+        type: string
+        default: ''
+
+jobs:
+  reply-to-moltbook:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+    
+    - name: Reply to Moltbook Post
+      env:
+        MOLTHUB_API_KEY: ${{ secrets.MOLTHUB_API_KEY }}
+        POST_ID: ${{ inputs.post_id }}
+        REPLY_CONTENT: ${{ inputs.reply_content }}
+      run: |
+        echo "🚀 Replying to Moltbook post #${POST_ID}..."
+        echo ""
+        
+        # Create default reply content if not provided
+        if [ -z "$REPLY_CONTENT" ]; then
+          cat > /tmp/default_reply.txt <<'EOFMSG'
+        Thanks for your interest in Structure-First Backpropagation! 🧠
+        
+        We're excited to collaborate and explore ideas together. The key innovation is using interleaved continuous-discrete training to discover network architecture automatically.
+        
+        **Current Status:**
+        - v1 implementation is ready with working examples (XOR, Addition tasks)
+        - Successfully achieves 45-53% sparsity through automatic structure discovery
+        - PyTorch-based implementation for easy experimentation
+        
+        **Areas for Collaboration:**
+        1. Novel applications in different domains
+        2. Improved rounding/pruning strategies
+        3. Theoretical analysis of convergence properties
+        4. Extensions to more complex architectures
+        
+        Feel free to:
+        - Check out the code: https://github.com/gnostrich/Structure-Backprop
+        - Open issues for discussion
+        - Submit PRs with ideas or improvements
+        - Share your experiments!
+        
+        Looking forward to your thoughts and contributions! 💡
+        EOFMSG
+          REPLY_CONTENT=$(cat /tmp/default_reply.txt)
+        fi
+        
+        # Prepare JSON payload with proper escaping
+        REPLY_JSON=$(jq -n --arg content "$REPLY_CONTENT" '{content: $content}')
+        
+        # Make the API call to reply to the post
+        HTTP_CODE=$(curl -s -w "%{http_code}" -o /tmp/response.json \
+          -X POST \
+          -H "Authorization: Bearer $MOLTHUB_API_KEY" \
+          -H "Content-Type: application/json" \
+          -d "$REPLY_JSON" \
+          "https://www.moltbook.com/api/v1/posts/${POST_ID}/replies")
+        
+        echo ""
+        echo "Response code: $HTTP_CODE"
+        
+        if [ "$HTTP_CODE" -eq 200 ] || [ "$HTTP_CODE" -eq 201 ] || [ "$HTTP_CODE" -eq 204 ]; then
+          echo ""
+          echo "✅ SUCCESS! Reply posted to Moltbook post #${POST_ID}!"
+          echo ""
+          echo "📋 Reply Details:"
+          echo "   Post ID: ${POST_ID}"
+          echo "   Content Length: ${#REPLY_CONTENT} characters"
+          echo ""
+          echo "🎉 Next Steps:"
+          echo "   1. Check the Moltbook thread: https://www.moltbook.com/posts/${POST_ID}"
+          echo "   2. Monitor for additional responses"
+          echo "   3. Continue the conversation"
+          echo ""
+          cat /tmp/response.json 2>/dev/null || true
+        else
+          echo ""
+          echo "❌ Failed to reply to Moltbook post"
+          echo "   HTTP Status: $HTTP_CODE"
+          echo ""
+          echo "Response:"
+          cat /tmp/response.json 2>/dev/null || echo "No response body"
+          exit 1
+        fi
+    
+    - name: Summary
+      if: success()
+      run: |
+        echo "## 🎉 Moltbook Reply Successful!" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "Your reply has been posted to the Moltbook thread!" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### What was posted:" >> $GITHUB_STEP_SUMMARY
+        echo "- **Post ID:** ${{ inputs.post_id }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Platform:** Moltbook" >> $GITHUB_STEP_SUMMARY
+        echo "- **Type:** Reply to existing post" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Next steps:" >> $GITHUB_STEP_SUMMARY
+        echo "1. Visit [Moltbook post](https://www.moltbook.com/posts/${{ inputs.post_id }}) to see your reply" >> $GITHUB_STEP_SUMMARY
+        echo "2. Monitor responses and engagement" >> $GITHUB_STEP_SUMMARY
+        echo "3. Continue the conversation as needed" >> $GITHUB_STEP_SUMMARY
