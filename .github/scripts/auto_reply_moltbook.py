@@ -65,32 +65,49 @@ def get_repo_context():
     return context
 
 def fetch_replies():
-    """Fetch new/unread replies from Moltbook"""
-    print("📥 Fetching new replies from Moltbook...")
+    """Fetch replies from Moltbook
+    
+    Note: This endpoint may not exist in the Moltbook API yet.
+    The function will attempt to fetch from multiple possible endpoints.
+    """
+    print("📥 Fetching replies from Moltbook...")
     
     headers = {
         'Authorization': f'Bearer {MOLTHUB_API_KEY}',
         'Content-Type': 'application/json'
     }
     
-    try:
-        response = requests.get(
-            'https://www.moltbook.com/api/v1/replies/unread',
-            headers=headers,
-            timeout=30
-        )
-        
-        if response.status_code == 200:
-            replies = response.json()
-            reply_list = replies.get('replies', [])
-            print(f"✅ Found {len(reply_list)} new replies")
-            return reply_list
-        else:
-            print(f"⚠️ No new replies found or API error: {response.status_code}")
-            return []
-    except Exception as e:
-        print(f"⚠️ Error fetching replies: {e}")
-        return []
+    # Try multiple possible endpoints
+    endpoints_to_try = [
+        'https://www.moltbook.com/api/v1/notifications',
+        'https://www.moltbook.com/api/v1/replies',
+        'https://www.moltbook.com/api/v1/mentions',
+    ]
+    
+    for endpoint in endpoints_to_try:
+        try:
+            print(f"  Trying endpoint: {endpoint}")
+            response = requests.get(
+                endpoint,
+                headers=headers,
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                # Handle different response formats
+                reply_list = data if isinstance(data, list) else data.get('replies', data.get('data', data.get('notifications', [])))
+                if reply_list:
+                    print(f"✅ Found {len(reply_list)} replies from {endpoint}")
+                    return reply_list
+            elif response.status_code != 404:
+                print(f"  ⚠️ Endpoint returned {response.status_code}: {response.text[:100]}")
+        except Exception as e:
+            print(f"  ⚠️ Error accessing {endpoint}: {e}")
+    
+    print(f"⚠️ No valid reply endpoints found. The Moltbook API may not support automatic reply fetching yet.")
+    print(f"💡 Tip: Use the 'Reply to Moltbook Post' workflow to manually reply to specific posts.")
+    return []
 
 def generate_ai_reply(reply_content, reply_author, repo_context):
     """Generate an AI-powered contextual reply"""
