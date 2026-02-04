@@ -48,15 +48,15 @@ Our method differs by making connectivity itself the learnable parameter—there
 Consider a feedforward neural network with L layers. The network computes:
 
 h^{(0)} = x (input)  
-h^{(\ell)}_i = σ(Σ_j w^{(\ell)}_{ij} h^{(\ell-1)}_j) for $\ell=1...L$
+h^{(0)} = x (input)  
+$h^{(\ell)}_i = \sigma(\sum_j w^{(\ell)}_{ij} h^{(\ell-1)}_j)$ for $\ell=1...L$
 
-where w^{(\ell)}_{ij} is the edge weight from node j in layer ℓ-1 to node i in layer ℓ.
-
+where $w^{(\ell)}_{ij}$ is the edge weight from node j in layer ℓ-1 to node i in layer ℓ.
 ### 3.2 Training Objective
 
-$\mathcal{L} = \mathcal{L}_\text{task}(y, \hat{y}) + \lambda \sum_{\ell,i,j} |w^{(\ell)}_{ij}|
+$\mathcal{L} = \mathcal{L}_\text{task}(y, \hat{y}) + \lambda \sum_{\ell,i,j} |w^{(\ell)}_{ij}|$
 
-where $\mathcal{L}_\text{task} is cross-entropy (classification) or MSE (regression) and \lambda$ controls sparsity pressure.
+where $\mathcal{L}_\text{task}$ is cross-entropy (classification) or MSE (regression) and $\lambda$ controls sparsity pressure.
 
 ### 3.3 Gradient Updates
 
@@ -64,7 +64,7 @@ $w^{(\ell)}_{ij} ← w^{(\ell)}_{ij} - \eta(∂\mathcal{L}_\text{task}/∂w^{(\e
 
 ### 3.4 Architecture Interpretation
 
-After training, we threshold edge weights: connections with |w^{(\ell)}_{ij}| < \epsilon are considered inactive.
+After training, we threshold edge weights: connections with $|w^{(\ell)}_{ij}| < \epsilon$ are considered inactive.
 
 ### 3.5 Implementation
 
