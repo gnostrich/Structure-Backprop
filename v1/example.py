@@ -16,6 +16,7 @@ from visualization import (
     create_summary_report,
     ensure_output_dir
 )
+from utils import set_seed, train_val_test_split
 
 
 def create_xor_dataset(n_samples: int = 100) -> tuple:
@@ -264,9 +265,16 @@ def demo_addition():
     # Evaluate
     with torch.no_grad():
         predictions = model(X)
-        final_loss = torch.nn.functional.mse_loss(predictions, y)
+        mse_loss = torch.nn.functional.mse_loss(predictions, y)
+        mae_loss = torch.nn.functional.l1_loss(predictions, y)
+        # Compute R² score
+        ss_res = ((predictions - y) ** 2).sum()
+        ss_tot = ((y - y.mean()) ** 2).sum()
+        r_squared = 1 - (ss_res / ss_tot) if ss_tot > 0 else 0
     
-    print(f"\nFinal Loss: {final_loss.item():.4f}")
+    print(f"\nFinal Loss (MSE): {mse_loss.item():.6f}")
+    print(f"Mean Absolute Error (MAE): {mae_loss.item():.6f}")
+    print(f"R² Score: {r_squared:.4f}")
     
     # Show structure
     print_structure_summary(model)
@@ -284,7 +292,9 @@ def demo_addition():
         
         # Create summary report
         final_metrics = {
-            'final_loss': final_loss.item()
+            'mse_loss': mse_loss.item(),
+            'mae_loss': mae_loss.item(),
+            'r_squared': r_squared
         }
         create_summary_report(model, history, final_metrics, 'addition')
         
