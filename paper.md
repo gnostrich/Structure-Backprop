@@ -48,30 +48,30 @@ Our method differs by making connectivity itself the learnable parameter—there
 Consider a feedforward neural network with L layers. The network computes:
 
 h^{(0)} = x (input)  
-h^{(ell)}_i = σ(Σ_j w^{(ell)}_{ij} h^{(ell-1)}_j) for $\ell=1...L$
+h^{(\ell)}_i = σ(Σ_j w^{(\ell)}_{ij} h^{(\ell-1)}_j) for $\ell=1...L$
 
-where w^{(ell)}_{ij} is the edge weight from node j in layer ℓ-1 to node i in layer ℓ.
+where w^{(\ell)}_{ij} is the edge weight from node j in layer ℓ-1 to node i in layer ℓ.
 
 ### 3.2 Training Objective
 
-$\mathcal{L} = \mathcal{L}_\text{task}(y, \hat{y}) + \lambda \sum_{\ell,i,j} |w^{(ell)}_{ij}|
+$\mathcal{L} = \mathcal{L}_\text{task}(y, \hat{y}) + \lambda \sum_{\ell,i,j} |w^{(\ell)}_{ij}|
 
-where \mathcal{L}_\text{task} is cross-entropy (classification) or MSE (regression) and λ controls sparsity pressure.
+where $\mathcal{L}_\text{task} is cross-entropy (classification) or MSE (regression) and \lambda$ controls sparsity pressure.
 
 ### 3.3 Gradient Updates
 
-w^{(ell)}_{ij} ← w^{(ell)}_{ij} - \eta(∂\mathcal{L}_\text{task}/∂w^{(ell)}_{ij} + \lambda \cdot \text{sign}(w^{(ell)}_{ij}))
+$w^{(\ell)}_{ij} ← w^{(\ell)}_{ij} - \eta(∂\mathcal{L}_\text{task}/∂w^{(\ell)}_{ij} + \lambda \cdot \text{sign}(w^{(\ell)}_{ij}))$
 
 ### 3.4 Architecture Interpretation
 
-After training, we threshold edge weights: connections with |w^{(ell)}_{ij}| < ε are considered inactive.
+After training, we threshold edge weights: connections with |w^{(\ell)}_{ij}| < \epsilon are considered inactive.
 
 ### 3.5 Implementation
 
 - Framework: PyTorch
-- Optimizer: Adam with \eta=0.001
-- Regularization: \lambda=0.01
-- Pruning threshold: \epsilon=0.01
+- Optimizer: Adam with $\eta$=0.001
+- Regularization: $\lambda$=0.01
+- Pruning threshold: $\epsilon$=0.01
 - Training: 1000 epochs (XOR), 2000 epochs (addition)
 
 ## 4. Experiments
