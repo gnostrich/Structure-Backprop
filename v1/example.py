@@ -17,6 +17,7 @@ from visualization import (
     ensure_output_dir
 )
 from utils import set_seed, train_val_test_split
+from export_utils import ensure_output_dir as export_dir, save_training_plot, save_metrics
 
 
 def create_xor_dataset(n_samples: int = 100) -> tuple:
@@ -224,6 +225,15 @@ def demo_xor():
     except Exception as e:
         print(f"Visualization error: {e}")
     
+    # Export static outputs for Phase 3
+    try:
+        output_dir = export_dir('xor')
+        save_training_plot(history, 'xor', output_dir)
+        save_metrics(final_metrics, 'xor', output_dir)
+        print(f"✓ Outputs saved to {output_dir}")
+    except Exception as e:
+        print(f"Export error: {e}")
+    
     return model, history
 
 
@@ -302,6 +312,15 @@ def demo_addition():
     except Exception as e:
         print(f"Visualization error: {e}")
     
+    # Export static outputs for Phase 3
+    try:
+        output_dir = export_dir('addition')
+        save_training_plot(history, 'addition', output_dir)
+        save_metrics(final_metrics, 'addition', output_dir)
+        print(f"✓ Outputs saved to {output_dir}")
+    except Exception as e:
+        print(f"Export error: {e}")
+    
     return model, history
 
 
@@ -326,3 +345,11 @@ if __name__ == "__main__":
     print("2. Addition (linear) may learn direct input→output paths")
     print("3. Structure sparsity increases during training as weak connections are pruned")
     print("4. The algorithm discovers problem-appropriate architectures automatically")
+    
+    # Create outputs README
+    try:
+        from export_utils import create_outputs_readme
+        create_outputs_readme(['xor', 'addition'])
+        print("\n✓ Outputs folder created with README")
+    except Exception as e:
+        print(f"\nWarning: Could not create outputs README: {e}")
