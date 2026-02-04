@@ -15,7 +15,7 @@ def save_training_plot(history, task_name, output_dir=None):
         output_dir = ensure_output_dir(task_name)
     
     plt.figure(figsize=(10, 6))
-    plt.plot(history['losses'])
+    plt.plot(history['loss'])
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
     plt.title(f'{task_name.capitalize()} - Training History')
