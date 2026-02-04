@@ -1,0 +1,13 @@
+# Structure-Aware Backpropagation
+
+**Anonymous Authors**
+
+## Abstract
+Neural architecture search (NAS) has traditionally treated network topology as a discrete optimization problem. We introduce Structure-Aware Backpropagation where network connectivity is parameterized by differentiable edge weights. Our method applies L1 regularization inducing automatic sparsification. Results: XOR (74.5% accuracy, 8/12 active edges) and addition (R²=0.796, 12/16 active edges).
+
+## 1. Introduction
+Network architecture determines computational capacity. We propose treating topology as differentiable by representing connections as weighted edges learned via backpropagation.
+
+**Key Insight**: Edge weights control flow; driving weights to zero removes edges. L1 regularization creates pruning pressure.
+
+**Contributions**: 1) Gradient-based joint optimization 2) Empirical validation 3) Training dynamics analysis
