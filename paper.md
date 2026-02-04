@@ -47,31 +47,31 @@ Our method differs by making connectivity itself the learnable parameter—there
 
 Consider a feedforward neural network with L layers. The network computes:
 
-h^(0) = x (input)  
-h^(ℓ)_i = σ(Σ_j w^(ℓ)_ij h^(ℓ-1)_j) for ℓ=1...L
+h^{(0)} = x (input)  
+h^{(ell)}_i = σ(Σ_j w^{(ell)}_{ij} h^{(ell-1)}_j) for $\ell=1...L$
 
-where w^(ℓ)_ij is the edge weight from node j in layer ℓ-1 to node i in layer ℓ.
+where w^{(ell)}_{ij} is the edge weight from node j in layer ℓ-1 to node i in layer ℓ.
 
 ### 3.2 Training Objective
 
-L = L_task(y, ŷ) + λ Σ_{ℓ,i,j} |w^(ℓ)_ij|
+$\mathcal{L} = \mathcal{L}_\text{task}(y, \hat{y}) + \lambda \sum_{\ell,i,j} |w^{(ell)}_{ij}|
 
-where L_task is cross-entropy (classification) or MSE (regression) and λ controls sparsity pressure.
+where \mathcal{L}_\text{task} is cross-entropy (classification) or MSE (regression) and λ controls sparsity pressure.
 
 ### 3.3 Gradient Updates
 
-w^(ℓ)_ij ← w^(ℓ)_ij - η(∂L_task/∂w^(ℓ)_ij + λ·sign(w^(ℓ)_ij))
+w^{(ell)}_{ij} ← w^{(ell)}_{ij} - \eta(∂\mathcal{L}_\text{task}/∂w^{(ell)}_{ij} + \lambda \cdot \text{sign}(w^{(ell)}_{ij}))
 
 ### 3.4 Architecture Interpretation
 
-After training, we threshold edge weights: connections with |w^(ℓ)_ij| < ε are considered inactive.
+After training, we threshold edge weights: connections with |w^{(ell)}_{ij}| < ε are considered inactive.
 
 ### 3.5 Implementation
 
 - Framework: PyTorch
-- Optimizer: Adam with η=0.001
-- Regularization: λ=0.01
-- Pruning threshold: ε=0.01
+- Optimizer: Adam with \eta=0.001
+- Regularization: \lambda=0.01
+- Pruning threshold: \epsilon=0.01
 - Training: 1000 epochs (XOR), 2000 epochs (addition)
 
 ## 4. Experiments
