@@ -113,8 +113,9 @@ Both tasks exhibit similar patterns:
 
 - Adaptive λ per layer/epoch
 - Stochastic architectures via structural dropout
-- Extension to recurrent connections
 - Large-scale validation (CIFAR-10, ImageNet)
+
+**Extension to Recurrent Connections**: This future direction has been implemented. Analysis shows that sequential/temporal training data (time series, state machines, cumulative operations) naturally encourages the emergence of cyclic structures through gradient descent. See `v1/` for implementation and `RECURRENT_TOPOLOGY_SUMMARY.md` for complete analysis.
 
 ## 6. Conclusion
 
