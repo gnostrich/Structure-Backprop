@@ -45,9 +45,22 @@ This repository contains versioned implementations to track iterations and impro
 - **`v1/`** - Initial implementation (current)
   - PyTorch prototype with architecture diagrams and pseudocode
   - Demonstrations on XOR and addition tasks
+  - **NEW**: Recurrent/cyclic topology support for sequential learning
   - See [v1/README.md](v1/README.md) for details
 
 Future versions (v2, v3, etc.) will be added as separate directories with their own documentation.
+
+## Recent Addition: Recurrent Topology Extension
+
+**What training data shapes topology into recurrent/cyclic structures?**
+
+We've extended the algorithm to support learning recurrent connections and analyzed what training data encourages cyclic topology:
+
+- **Sequential/temporal data** with memory requirements
+- **State machines** and cumulative operations
+- **Time series** and delayed dependencies
+
+See [RECURRENT_TOPOLOGY_SUMMARY.md](RECURRENT_TOPOLOGY_SUMMARY.md) for complete analysis and [v1/README.md](v1/README.md#recurrentcyclic-topology-extension) for implementation details.
 
 ## Quick Start (v1)
 
