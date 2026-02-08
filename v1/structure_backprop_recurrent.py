@@ -149,8 +149,8 @@ class RecurrentStructureBackpropNetwork(nn.Module):
         
         # Compute new hidden state
         # Hidden nodes receive input from: inputs + previous hidden state
-        hidden_inputs = torch.matmul(activations, effective_weights[:, self.hidden_range[0]:self.hidden_range[1]])
-        new_hidden = self.activation(hidden_inputs)
+        preactivation_hidden = torch.matmul(activations, effective_weights[:, self.hidden_range[0]:self.hidden_range[1]])
+        new_hidden = self.activation(preactivation_hidden)
         
         # Update activations with new hidden state
         activations = torch.cat([
@@ -160,8 +160,8 @@ class RecurrentStructureBackpropNetwork(nn.Module):
         ], dim=1)
         
         # Compute output
-        output_inputs = torch.matmul(activations, effective_weights[:, self.output_range[0]:self.output_range[1]])
-        output = output_inputs  # No activation on output (for regression/logits)
+        preactivation_output = torch.matmul(activations, effective_weights[:, self.output_range[0]:self.output_range[1]])
+        output = preactivation_output  # No activation on output (for regression/logits)
         
         return output, new_hidden
     

@@ -45,13 +45,14 @@ def visualize_recurrent_structure(model, title="Learned Recurrent Structure"):
     ax1.axvline(model.input_range[1] - 0.5, color='black', linewidth=2)
     ax1.axvline(model.hidden_range[1] - 0.5, color='black', linewidth=2)
     
-    # Add labels
-    ax1.text(-1, model.input_range[0] + model.n_input/2, 'Input', 
-             ha='right', va='center', fontsize=10)
-    ax1.text(-1, model.hidden_range[0] + model.n_hidden/2, 'Hidden', 
-             ha='right', va='center', fontsize=10)
-    ax1.text(-1, model.output_range[0] + model.n_output/2, 'Output', 
-             ha='right', va='center', fontsize=10)
+    # Add labels for node types
+    node_types = [
+        ('Input', model.input_range[0], model.n_input),
+        ('Hidden', model.hidden_range[0], model.n_hidden),
+        ('Output', model.output_range[0], model.n_output)
+    ]
+    for label, start, size in node_types:
+        ax1.text(-1, start + size/2, label, ha='right', va='center', fontsize=10)
     
     plt.colorbar(im1, ax=ax1, label='Weight Value')
     
