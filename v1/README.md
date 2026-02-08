@@ -356,6 +356,98 @@ feature1,feature2,feature3,target
 - Monitor **training history** for convergence issues
 - Review **summary reports** for quick overview
 
+## Recurrent/Cyclic Topology Extension
+
+**NEW:** Support for learning recurrent and cyclic structures!
+
+The base implementation focuses on feedforward structures, but we've extended it to support recurrent connections that enable temporal/sequential learning.
+
+### New Files
+
+- **RECURRENT_TOPOLOGY_ANALYSIS.md** - Comprehensive analysis answering "What training data shapes topology into recurrent/cyclic structures?"
+- **structure_backprop_recurrent.py** - Extended implementation supporting recurrent connections
+- **recurrent_data_examples.py** - Examples of training data that encourage recurrent structures
+- **demo_recurrent_learning.py** - Full demonstration showing emergence of cycles
+
+### What Training Data Encourages Recurrent Structures?
+
+Training data with these characteristics naturally encourages cyclic topology:
+
+1. **Sequential/Temporal Data**: Time series, sequences where order matters
+2. **Memory Requirements**: Output at time *t* depends on previous inputs
+3. **State Machines**: Tasks requiring internal state tracking (parity, counters)
+4. **Fixed-Point Problems**: Iterative refinement until convergence
+5. **Long-Range Dependencies**: Context from distant past affects current output
+6. **Periodic Patterns**: Oscillatory or cyclical behavior
+
+### Quick Start with Recurrent Learning
+
+```bash
+# See examples of data patterns that encourage recurrence
+python recurrent_data_examples.py
+
+# Run full demonstration with training and visualization
+python demo_recurrent_learning.py
+```
+
+### Example: Cumulative Sum Task
+
+```python
+from structure_backprop_recurrent import RecurrentStructureBackpropNetwork
+from recurrent_data_examples import create_sequence_sum_dataset
+
+# Create task: output cumulative sum at each time step
+# Input:  [2, 3, 1, 4] -> Output: [2, 5, 6, 10]
+X, y = create_sequence_sum_dataset(n_sequences=200, seq_len=6)
+
+# Create recurrent network
+model = RecurrentStructureBackpropNetwork(
+    n_input=1,
+    n_hidden=4,
+    n_output=1,
+    activation='tanh'
+)
+
+# Train - network will discover recurrent connections
+history = train_recurrent_structure_backprop(
+    model=model,
+    train_data=(X, y),
+    n_epochs=800,
+    sequence_mode=True
+)
+
+# Check if cycles emerged
+print(f"Recurrent edges learned: {len(model.get_recurrent_edges())}")
+print(f"Has cycles: {model.has_cycles()}")
+```
+
+### Key Differences from Feedforward
+
+**Feedforward Structure-First Backprop:**
+- Connections: Input → Hidden → Output (strictly forward)
+- Tasks: Static pattern recognition (XOR, classification)
+- Data: Independent samples (i.i.d.)
+
+**Recurrent Structure-First Backprop:**
+- Connections: Allows Hidden ↔ Hidden (including cycles)
+- Tasks: Sequential prediction, state machines, temporal patterns
+- Data: Sequential, time-ordered (temporal dependencies)
+
+### When to Use Recurrent Version
+
+Use the recurrent version when your task involves:
+- **Time series**: Stock prices, sensor data, weather
+- **Sequences**: Text, audio, video, event logs
+- **State tracking**: Counters, accumulators, game states
+- **Memory**: Past inputs affect current outputs
+
+Use the feedforward version when:
+- **Static patterns**: Each input independently maps to output
+- **No temporal order**: Samples are i.i.d.
+- **Simpler**: Feedforward is easier to train and interpret
+
+See **RECURRENT_TOPOLOGY_ANALYSIS.md** for complete theoretical analysis.
+
 ## Future Versions
 
 This v1 implementation serves as a baseline. Future versions (v2, v3, etc.) will incorporate improvements and refinements based on review and experimentation.
